@@ -46,8 +46,8 @@
         <!-- 毒品原因說明提示區 -->
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm text-xs space-y-2">
             <p class="font-bold text-emerald-800 text-sm mb-1 flex items-center justify-between">
-                <span>📋 毒品代碼解密 (Reason*)</span>
-                <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200 font-semibold">見到即開箱</span>
+                <span>📋 不安全提示</span>
+                <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200 font-semibold">開箱/問卦</span>
             </p>
             <div class="grid grid-cols-2 gap-1.5 text-slate-600">
                 <div><span class="font-bold text-emerald-700">CAP:</span> 大麻產地</div>
@@ -248,7 +248,7 @@
                 return;
             }
             
-            // 如果不在大數據庫內：保底防禦，自動標為未登記並「奉旨開箱」！
+            // 如果不在大數據庫內：保底防禦，自動標為未登記並「問卦」！
             if (items.length === 0 && customQuery.trim() !== "") {
                 const queryUpper = customQuery.trim().toUpperCase();
                 items = [{
