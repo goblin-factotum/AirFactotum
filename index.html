@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>查埠破鑊 - 哥布林生存指南</title>
+    <title>哥布林生存技能</title>
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -11,14 +11,14 @@
 </head>
 <body class="bg-zinc-950 text-zinc-100 min-h-screen pb-10 font-sans">
 
-    <!-- 頂部標題列 (哥布林洞穴風) -->
+    <!-- 頂部標題列 -->
     <header class="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-10 shadow-md">
         <div class="max-w-md mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center space-x-2">
                 <span class="text-2xl">🦴</span>
                 <div>
                     <h1 class="text-lg font-extrabold tracking-wider text-emerald-400">查埠破鑊</h1>
-                    <p class="text-[10px] text-zinc-400">哥布林生存日常</p>
+                    <p class="text-[10px] text-zinc-400">走之前，照一照；照之前，查一查</p>
                 </div>
             </div>
             <span id="update-time" class="text-[11px] text-zinc-500 font-mono"></span>
@@ -33,21 +33,21 @@
             <span class="text-2xl">🦠</span>
             <div>
                 <p class="font-bold text-emerald-400">哥布林生存日常：</p>
-                <p class="text-[11px] text-zinc-300 mt-0.5">哥布林在河生存，要保護好自己。</p>
+                <p class="text-[11px] text-zinc-300 mt-0.5">河中險象環生，要保護好自己。！**</p>
             </div>
         </div>
 
         <!-- 搜尋列 -->
         <div>
-            <input type="text" id="search-input" placeholder="🔍 輸入 三位數安全碼" 
+            <input type="text" id="search-input" placeholder="🔍 請輸入三位數安全碼" 
                 class="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-xl text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm">
         </div>
 
-        <!-- 毒品原因說明折疊/提示區 -->
+        <!-- 毒品原因說明提示區 -->
         <div class="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 shadow-sm text-xs space-y-2">
             <p class="font-bold text-emerald-400 text-sm mb-1 flex items-center justify-between">
-                <span>📋 點解嘅??</span>
-                <span class="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-800">見到即開箱</span>
+                <span>📋 當抄考</span>
+                <span class="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-800">問卦/開箱</span>
             </p>
             <div class="grid grid-cols-2 gap-1.5 text-zinc-400">
                 <div><span class="font-semibold text-emerald-400">CAP:</span> 大麻產地</div>
@@ -62,108 +62,110 @@
             </div>
         </div>
 
-        <!-- 機場列表容器 -->
+        <!-- 機場列表容器 (預設清空，搜尋時才顯示) -->
         <div id="airport-list" class="space-y-3">
-            <!-- 數據由 JS 動態載入 -->
         </div>
 
     </main>
 
     <script>
         // ==========================================
-        // 綜合數據庫：包含顏色、國家與毒品原因
+        // 哥布林情報數據庫
         // ==========================================
         const database = [
-            // 亞洲
-            { iata: "AMS", icao: "EHAM", name: "阿姆斯特丹", country: "荷蘭", color: "綠色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "ANK", icao: "LTAD", name: "安卡拉", country: "土耳其", color: "紅色", reason: "", reasonDesc: "" },
-            { iata: "AUH", icao: "OMAA", name: "阿布扎比", country: "阿聯酋", color: "藍色", reason: "", reasonDesc: "" },
-            { iata: "BAH", icao: "OBBI", name: "巴林", country: "巴林", color: "藍色", reason: "", reasonDesc: "" },
-            { iata: "BKI", icao: "WBKK", name: "亞庇", country: "馬來西亞", color: "紅色", reason: "MT", reasonDesc: "MDMA 轉運國家" },
-            { iata: "BKK", icao: "VTBS", name: "曼谷素凡納布", country: "泰國", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "BOM", icao: "VABB", name: "孟買", country: "印度", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "BWN", icao: "WBSB", name: "斯里巴加灣", country: "文萊", color: "藍色", reason: "", reasonDesc: "" },
-            { iata: "CAN", icao: "ZGGG", name: "廣州白雲", country: "中國", color: "藍色", reason: "", reasonDesc: "" },
-            { iata: "CCU", icao: "VECC", name: "加爾各答", country: "印度", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "CEB", icao: "RPVM", name: "宿霧", country: "菲律賓", color: "綠色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "CGK", icao: "WIII", name: "雅加達", country: "印尼", color: "綠色", reason: "MP", reasonDesc: "MDMA 產地國家" },
-            { iata: "CMB", icao: "VCBI", name: "科倫坡", country: "斯里蘭卡", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "CNX", icao: "VTCC", name: "清邁", country: "泰國", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "DAC", icao: "VGHS", name: "達卡", country: "孟加拉", color: "紅色", reason: "MT", reasonDesc: "MDMA 轉運國家" },
-            { iata: "DEL", icao: "VIDP", name: "德里", country: "印度", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "DOH", icao: "OTHH", name: "多哈", country: "卡塔爾", color: "藍色", reason: "HT", reasonDesc: "海洛因轉運國家" },
-            { iata: "DPS", icao: "WADD", name: "峇里島", country: "印尼", color: "綠色", reason: "MP", reasonDesc: "MDMA 產地國家" },
-            { iata: "FUK", icao: "RJFF", name: "福岡", country: "日本", color: "藍色", reason: "", reasonDesc: "" },
-            { iata: "HAN", icao: "VVNB", name: "河內", country: "越南", color: "紅色", reason: "OT", reasonDesc: "鴉片類轉運國家" },
-            { iata: "HKT", icao: "VTSP", name: "布吉", country: "泰國", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "JHB", icao: "WMKJ", name: "新山", country: "馬來西亞", color: "紅色", reason: "MT", reasonDesc: "MDMA 轉運國家" },
-            { iata: "KBL", icao: "OAKB", name: "喀布爾", country: "阿富汗", color: "紅色", reason: "OP", reasonDesc: "鴉片類產地國家" },
-            { iata: "KCH", icao: "WBGG", name: "古晉", country: "馬來西亞", color: "紅色", reason: "MT", reasonDesc: "MDMA 轉運國家" },
-            { iata: "KHH", icao: "RCKH", name: "高雄", country: "台灣", color: "藍色", reason: "", reasonDesc: "" },
-            { iata: "KHI", icao: "OPKC", name: "卡拉奇", country: "巴基斯坦", color: "紅色", reason: "OP", reasonDesc: "鴉片類產地國家" },
-            { iata: "KMC", icao: "---", name: "其他機場", country: "巴基斯坦", color: "紅色", reason: "OP", reasonDesc: "鴉片類產地國家" },
-            { iata: "KTM", icao: "VNKT", name: "加德滿都", country: "尼泊爾", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "KUL", icao: "WMKK", name: "吉隆坡", country: "馬來西亞", color: "紅色", reason: "MT", reasonDesc: "MDMA 轉運國家" },
-            { iata: "KWT", icao: "OKBK", name: "科威特", country: "科威特", color: "藍色", reason: "", reasonDesc: "" },
-            { iata: "MAA", icao: "VOMM", name: "馬德拉斯", country: "印度", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "MNL", icao: "RPLL", name: "馬尼拉", country: "菲律賓", color: "綠色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "NDH", icao: "---", name: "印度北部其他", country: "印度", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "NRT", icao: "RJAA", name: "東京成田", country: "日本", color: "藍色", reason: "", reasonDesc: "" },
-            { iata: "PEK", icao: "ZBAA", name: "北京首都", country: "中國", color: "藍色", reason: "", reasonDesc: "" },
-            { iata: "PEN", icao: "WMKP", name: "檳城", country: "馬來西亞", color: "紅色", reason: "MT", reasonDesc: "MDMA 轉運國家" },
-            { iata: "PNH", icao: "VDPP", name: "金邊", country: "柬埔寨", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "RGN", icao: "VYYY", name: "仰光", country: "緬甸", color: "紅色", reason: "OP", reasonDesc: "鴉片類產地國家" },
-            { iata: "RWP", icao: "OPRN", name: "拉瓦品第/伊斯蘭堡", country: "巴基斯坦", color: "紅色", reason: "OP", reasonDesc: "鴉片類產地國家" },
-            { iata: "SEL", icao: "RKSI", name: "首爾仁川", country: "韓國", color: "藍色", reason: "", reasonDesc: "" },
-            { iata: "SFS", icao: "RPLB", name: "蘇比克灣", country: "菲律賓", color: "綠色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "SGN", icao: "VVTS", name: "胡志明市", country: "越南", color: "紅色", reason: "OT", reasonDesc: "鴉片類轉運國家" },
-            { iata: "SHA", icao: "ZSSS", name: "上海虹橋", country: "中國", color: "藍色", reason: "", reasonDesc: "" },
-            { iata: "SIN", icao: "WSSS", name: "新加坡樟宜", country: "新加坡", color: "紅色", reason: "MT", reasonDesc: "MDMA 轉運國家" },
-            { iata: "SUB", icao: "WARR", name: "泗水", country: "印尼", color: "綠色", reason: "MP", reasonDesc: "MDMA 產地國家" },
-            { iata: "THR", icao: "OIIE", name: "德黑蘭", country: "伊朗", color: "紅色", reason: "HP", reasonDesc: "海洛因產地國家" },
-            { iata: "TPE", icao: "RCTP", name: "台北桃園", country: "台灣", color: "藍色", reason: "", reasonDesc: "" },
-            { iata: "TYO", icao: "RJTT", name: "東京", country: "日本", color: "藍色", reason: "", reasonDesc: "" },
-            { iata: "VIE", icao: "LOWW", name: "維也納", country: "奧地利", color: "紅色", reason: "", reasonDesc: "" },
+            // 本地
+            { iata: "HKG", name: "香港國際機場", country: "香港", color: "黑色", reason: "", reasonDesc: "" },
+
+            // 亞洲與其他高風險/轉運地區
+            { iata: "AMS", name: "阿姆斯特丹", country: "荷蘭", color: "綠色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "ANK", name: "安卡拉", country: "土耳其", color: "紅色", reason: "", reasonDesc: "" },
+            { iata: "AUH", name: "阿布扎比", country: "阿聯酋", color: "藍色", reason: "", reasonDesc: "" },
+            { iata: "BAH", name: "巴林", country: "巴林", color: "藍色", reason: "", reasonDesc: "" },
+            { iata: "BKI", name: "亞庇", country: "馬來西亞", color: "紅色", reason: "MT", reasonDesc: "MDMA 轉運國家" },
+            { iata: "BKK", name: "曼谷素凡納布", country: "泰國", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "BOM", name: "孟買", country: "印度", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "BWN", name: "斯里巴加灣", country: "文萊", color: "藍色", reason: "", reasonDesc: "" },
+            { iata: "CAN", name: "廣州白雲", country: "中國", color: "藍色", reason: "", reasonDesc: "" },
+            { iata: "CCU", name: "加爾各答", country: "印度", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "CEB", name: "宿霧", country: "菲律賓", color: "綠色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "CGK", name: "雅加達", country: "印尼", color: "綠色", reason: "MP", reasonDesc: "MDMA 產地國家" },
+            { iata: "CMB", name: "科倫坡", country: "斯里蘭卡", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "CNX", name: "清邁", country: "泰國", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "DAC", name: "達卡", country: "孟加拉", color: "紅色", reason: "MT", reasonDesc: "MDMA 轉運國家" },
+            { iata: "DEL", name: "德里", country: "印度", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "DOH", name: "多哈", country: "卡塔爾", color: "藍色", reason: "HT", reasonDesc: "海洛因轉運國家" },
+            { iata: "DPS", name: "峇里島", country: "印尼", color: "綠色", reason: "MP", reasonDesc: "MDMA 產地國家" },
+            { iata: "FUK", name: "福岡", country: "日本", color: "藍色", reason: "", reasonDesc: "" },
+            { iata: "HAN", name: "河內", country: "越南", color: "紅色", reason: "OT", reasonDesc: "鴉片類轉運國家" },
+            { iata: "HKT", name: "布吉", country: "泰國", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "JHB", name: "新山", country: "馬來西亞", color: "紅色", reason: "MT", reasonDesc: "MDMA 轉運國家" },
+            { iata: "KBL", name: "喀布爾", country: "阿富汗", color: "紅色", reason: "OP", reasonDesc: "鴉片類產地國家" },
+            { iata: "KCH", name: "古晉", country: "馬來西亞", color: "紅色", reason: "MT", reasonDesc: "MDMA 轉運國家" },
+            { iata: "KHH", name: "高雄", country: "台灣", color: "藍色", reason: "", reasonDesc: "" },
+            { iata: "KHI", name: "卡拉奇", country: "巴基斯坦", color: "紅色", reason: "OP", reasonDesc: "鴉片類產地國家" },
+            { iata: "KMC", name: "其他機場", country: "巴基斯坦", color: "紅色", reason: "OP", reasonDesc: "鴉片類產地國家" },
+            { iata: "KTM", name: "加德滿都", country: "尼泊爾", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "KUL", name: "吉隆坡", country: "馬來西亞", color: "紅色", reason: "MT", reasonDesc: "MDMA 轉運國家" },
+            { iata: "KWT", name: "科威特", country: "科威特", color: "藍色", reason: "", reasonDesc: "" },
+            { iata: "MAA", name: "馬德拉斯", country: "印度", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "MNL", name: "馬尼拉", country: "菲律賓", color: "綠色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "NDH", name: "印度北部其他", country: "印度", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "NRT", name: "東京成田", country: "日本", color: "藍色", reason: "", reasonDesc: "" },
+            { iata: "PEK", name: "北京首都", country: "中國", color: "藍色", reason: "", reasonDesc: "" },
+            { iata: "PEN", name: "檳城", country: "馬來西亞", color: "紅色", reason: "MT", reasonDesc: "MDMA 轉運國家" },
+            { iata: "PNH", name: "金邊", country: "柬埔寨", color: "紅色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "RGN", name: "仰光", country: "緬甸", color: "紅色", reason: "OP", reasonDesc: "鴉片類產地國家" },
+            { iata: "RWP", name: "拉瓦品第/伊斯蘭堡", country: "巴基斯坦", color: "紅色", reason: "OP", reasonDesc: "鴉片類產地國家" },
+            { iata: "SEL", name: "首爾仁川", country: "韓國", color: "藍色", reason: "", reasonDesc: "" },
+            { iata: "SFS", name: "蘇比克灣", country: "菲律賓", color: "綠色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "SGN", name: "胡志明市", country: "越南", color: "紅色", reason: "OT", reasonDesc: "鴉片類轉運國家" },
+            { iata: "SHA", name: "上海虹橋", country: "中國", color: "藍色", reason: "", reasonDesc: "" },
+            { iata: "SIN", name: "新加坡樟宜", country: "新加坡", color: "紅色", reason: "MT", reasonDesc: "MDMA 轉運國家" },
+            { iata: "SUB", name: "泗水", country: "印尼", color: "綠色", reason: "MP", reasonDesc: "MDMA 產地國家" },
+            { iata: "THR", name: "德黑蘭", country: "伊朗", color: "紅色", reason: "HP", reasonDesc: "海洛因產地國家" },
+            { iata: "TPE", name: "台北桃園", country: "台灣", color: "藍色", reason: "", reasonDesc: "" },
+            { iata: "TYO", name: "東京", country: "日本", color: "藍色", reason: "", reasonDesc: "" },
+            { iata: "VIE", name: "維也納", country: "奧地利", color: "紅色", reason: "", reasonDesc: "" },
 
             // 中東與歐洲其他
-            { iata: "EVN", icao: "UDYZ", name: "埃里溫", country: "亞美尼亞", color: "黑色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "IKA", icao: "OIIE", name: "德黑蘭伊瑪目霍梅尼", country: "伊朗", color: "黑色", reason: "HP", reasonDesc: "海洛因產地國家" },
-            { iata: "SDA", icao: "ORBI", name: "巴格達", country: "伊拉克", color: "黑色", reason: "HP", reasonDesc: "海洛因產地國家" },
-            { iata: "TIA", icao: "LATI", name: "地拉那", country: "阿爾巴尼亞", color: "黑色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "BAK", icao: "UBBB", name: "巴庫", country: "阿塞拜疆", color: "黑色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "SOF", icao: "LBSF", name: "索菲亞", country: "保加利亞", color: "黑色", reason: "MP", reasonDesc: "MDMA 產地國家" },
+            { iata: "EVN", name: "埃里溫", country: "亞美尼亞", color: "黑色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "IKA", name: "德黑蘭伊瑪目霍梅尼", country: "伊朗", color: "黑色", reason: "HP", reasonDesc: "海洛因產地國家" },
+            { iata: "SDA", name: "巴格達", country: "伊拉克", color: "黑色", reason: "HP", reasonDesc: "海洛因產地國家" },
+            { iata: "TIA", name: "地拉那", country: "阿爾巴尼亞", color: "黑色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "BAK", name: "巴庫", country: "阿塞拜疆", color: "黑色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "SOF", name: "索菲亞", country: "保加利亞", color: "黑色", reason: "MP", reasonDesc: "MDMA 產地國家" },
 
             // 非洲
-            { iata: "ADD", icao: "HAAB", name: "亞斯巴巴布", country: "埃塞俄比亞", color: "黑色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "NBO", icao: "HKJK", name: "奈洛比", country: "肯亞", color: "黑色", reason: "MT", reasonDesc: "MDMA 轉運國家" },
-            { iata: "RBA", icao: "GMME", name: "拉巴特", country: "摩洛哥", color: "黑色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "ABV", icao: "DNAA", name: "阿布扎尼", country: "奈及利亞", color: "黑色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "JNB", icao: "FAOR", name: "約翰內斯堡", country: "南非", color: "黑色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "ADD", name: "亞斯巴巴布", country: "埃塞俄比亞", color: "黑色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "NBO", name: "奈洛比", country: "肯亞", color: "黑色", reason: "MT", reasonDesc: "MDMA 轉運國家" },
+            { iata: "RBA", name: "拉巴特", country: "摩洛哥", color: "黑色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "ABV", name: "阿布扎尼", country: "奈及利亞", color: "黑色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "JNB", name: "約翰內斯堡", country: "南非", color: "黑色", reason: "CAP", reasonDesc: "大麻產地國家" },
 
             // 美洲
-            { iata: "BOG", icao: "SKBO", name: "波哥大", country: "哥倫比亞", color: "綠色", reason: "OP", reasonDesc: "鴉片類產地國家" },
-            { iata: "BGI", icao: "TBPB", name: "巴巴多斯", country: "加勒比海", color: "綠色", reason: "", reasonDesc: "" },
-            { iata: "BUE", icao: "SAEZ", name: "布宜諾斯艾利斯", country: "阿根廷", color: "綠色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "CAY", icao: "SOCA", name: "卡宴", country: "法属圭亚那", color: "綠色", reason: "", reasonDesc: "" },
-            { iata: "CCS", icao: "SVMI", name: "加拉加斯", country: "委內瑞拉", color: "綠色", reason: "COP", reasonDesc: "可卡因轉運國家" },
-            { iata: "GEO", icao: "SYCJ", name: "喬治敦", country: "圭亞那", color: "綠色", reason: "", reasonDesc: "" },
-            { iata: "GRU", icao: "SBGR", name: "聖保羅", country: "巴西", color: "綠色", reason: "COT", reasonDesc: "可卡因產地國家" },
-            { iata: "GUA", icao: "MGGT", name: "危地馬拉城", country: "危地馬拉", color: "綠色", reason: "", reasonDesc: "" },
-            { iata: "KIN", icao: "MKJP", name: "金斯敦", country: "牙買加", color: "綠色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "LAP", icao: "SLLP", name: "拉巴斯", country: "玻利維亞", color: "綠色", reason: "COP", reasonDesc: "可卡因轉運國家" },
-            { iata: "LIM", icao: "SPJC", name: "利馬", country: "秘魯", color: "綠色", reason: "OP", reasonDesc: "鴉片類產地國家" },
-            { iata: "MBJ", icao: "MKJS", name: "蒙特哥貝", country: "牙買加", color: "綠色", reason: "CAP", reasonDesc: "大麻產地國家" },
-            { iata: "MEX", icao: "MMMX", name: "墨西哥城", country: "墨西哥", color: "綠色", reason: "OP", reasonDesc: "鴉片類產地國家" },
-            { iata: "MVD", icao: "SUMU", name: "蒙特維多", country: "烏拉圭", color: "綠色", reason: "", reasonDesc: "" },
-            { iata: "PAC", icao: "MPPA", name: "巴拿馬城", country: "巴拿馬", color: "綠色", reason: "", reasonDesc: "" },
-            { iata: "PBM", icao: "SMJP", name: "巴拉馬利波", country: "蘇里南", color: "綠色", reason: "", reasonDesc: "" },
-            { iata: "PTY", icao: "MPTO", name: "托庫門", country: "巴拿馬", color: "綠色", reason: "", reasonDesc: "" },
-            { iata: "POS", icao: "TTPP", name: "西班牙港", country: "特立尼達和多巴哥", color: "綠色", reason: "", reasonDesc: "" },
-            { iata: "RIO", icao: "SBGL", name: "里約熱內盧", country: "巴西", color: "綠色", reason: "COT", reasonDesc: "可卡因產地國家" },
-            { iata: "SAP", icao: "MHLM", name: "聖佩德羅蘇拉", country: "洪都拉斯", color: "綠色", reason: "", reasonDesc: "" },
-            { iata: "SCL", icao: "SCEL", name: "聖地亞哥", country: "智利", color: "綠色", reason: "", reasonDesc: "" },
-            { iata: "SRZ", icao: "SLET", name: "聖克魯斯", country: "玻利維亞", color: "綠色", reason: "COP", reasonDesc: "可卡因轉運國家" },
-            { iata: "UIO", icao: "SEQM", name: "基多", country: "厄瓜多爾", color: "綠色", reason: "", reasonDesc: "" }
+            { iata: "BOG", name: "波哥大", country: "哥倫比亞", color: "綠色", reason: "OP", reasonDesc: "鴉片類產地國家" },
+            { iata: "BGI", name: "巴巴多斯", country: "加勒比海", color: "綠色", reason: "", reasonDesc: "" },
+            { iata: "BUE", name: "布宜諾斯艾利斯", country: "阿根廷", color: "綠色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "CAY", name: "卡宴", country: "法属圭亚那", color: "綠色", reason: "", reasonDesc: "" },
+            { iata: "CCS", name: "加拉加斯", country: "委內瑞拉", color: "綠色", reason: "COP", reasonDesc: "可卡因轉運國家" },
+            { iata: "GEO", name: "喬治敦", country: "圭亞那", color: "綠色", reason: "", reasonDesc: "" },
+            { iata: "GRU", name: "聖保羅", country: "巴西", color: "綠色", reason: "COT", reasonDesc: "可卡因產地國家" },
+            { iata: "GUA", name: "危地馬拉城", country: "危地馬拉", color: "綠色", reason: "", reasonDesc: "" },
+            { iata: "KIN", name: "金斯敦", country: "牙買加", color: "綠色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "LAP", name: "拉巴斯", country: "玻利維亞", color: "綠色", reason: "COP", reasonDesc: "可卡因轉運國家" },
+            { iata: "LIM", name: "利馬", country: "秘魯", color: "綠色", reason: "OP", reasonDesc: "鴉片類產地國家" },
+            { iata: "MBJ", name: "蒙特哥貝", country: "牙買加", color: "綠色", reason: "CAP", reasonDesc: "大麻產地國家" },
+            { iata: "MEX", name: "墨西哥城", country: "墨西哥", color: "綠色", reason: "OP", reasonDesc: "鴉片類產地國家" },
+            { iata: "MVD", name: "蒙特維多", country: "烏拉圭", color: "綠色", reason: "", reasonDesc: "" },
+            { iata: "PAC", name: "巴拿馬城", country: "巴拿馬", color: "綠色", reason: "", reasonDesc: "" },
+            { iata: "PBM", name: "巴拉馬利波", country: "蘇里南", color: "綠色", reason: "", reasonDesc: "" },
+            { iata: "PTY", name: "托庫門", country: "巴拿馬", color: "綠色", reason: "", reasonDesc: "" },
+            { iata: "POS", name: "西班牙港", country: "特立尼達和多巴哥", color: "綠色", reason: "", reasonDesc: "" },
+            { iata: "RIO", name: "里約熱內盧", country: "巴西", color: "綠色", reason: "COT", reasonDesc: "可卡因產地國家" },
+            { iata: "SAP", name: "聖佩德羅蘇拉", country: "洪都拉斯", color: "綠色", reason: "", reasonDesc: "" },
+            { iata: "SCL", name: "聖地亞哥", country: "智利", color: "綠色", reason: "", reasonDesc: "" },
+            { iata: "SRZ", name: "聖克魯斯", country: "玻利維亞", color: "綠色", reason: "COP", reasonDesc: "可卡因轉運國家" },
+            { iata: "UIO", name: "基多", country: "厄瓜多爾", color: "綠色", reason: "", reasonDesc: "" }
         ];
 
         const listContainer = document.getElementById('airport-list');
@@ -173,20 +175,22 @@
         function renderList(items, customQuery = "") {
             listContainer.innerHTML = '';
             
+            // 如果搜尋列沒有輸入任何字，預設隱藏所有結果，保持頁面超短！
+            if (customQuery.trim() === "") {
+                return;
+            }
+            
+            // 如果不在名單內：哥布林保底防禦，自動標為未登記並「奉旨開箱」！
             if (items.length === 0 && customQuery.trim() !== "") {
                 const queryUpper = customQuery.trim().toUpperCase();
                 items = [{
                     iata: queryUpper,
-                    icao: "---",
-                    name: `${queryUpper} 機場`,
-                    country: "未知國家",
+                    name: `未登記神祕航班`,
+                    country: "境外未收錄地區",
                     color: "黑色",
-                    reason: "",
-                    reasonDesc: "無相關毒品記錄資料"
+                    reason: "未知高危",
+                    reasonDesc: "不在名單內，哥布林守則：照開箱！"
                 }];
-            } else if (items.length === 0) {
-                listContainer.innerHTML = `<div class="text-center py-10 text-zinc-500">搵唔到相關機場數據</div>`;
-                return;
             }
 
             items.forEach(item => {
@@ -207,7 +211,6 @@
                     badgeStyle = "bg-zinc-900 text-zinc-100 border-zinc-700";
                 }
 
-                // 毒品原因與「奉旨開箱」標籤
                 let reasonHtml = "";
                 if (item.reason) {
                     reasonHtml = `
@@ -229,7 +232,6 @@
                         <div class="flex items-center space-x-2">
                             <span class="w-2.5 h-2.5 rounded-full ${dotColor} inline-block"></span>
                             <span class="font-bold text-base text-zinc-100">${item.iata}</span>
-                            <span class="text-xs text-zinc-500 font-mono">(${item.icao})</span>
                         </div>
                         <p class="text-xs text-zinc-400 font-medium">${item.name} (${item.country})</p>
                         ${reasonHtml}
@@ -244,20 +246,19 @@
             });
         }
 
-        // 初始化渲染全部
-        renderList(database);
+        // 預設傳入空字串，隱藏列表
+        renderList([], "");
 
-        // 即時搜尋
+        // 監聽輸入，只有打字時才即時渲染
         searchInput.addEventListener('input', (e) => {
             const keyword = e.target.value.toLowerCase().trim();
             if (!keyword) {
-                renderList(database);
+                renderList([], "");
                 return;
             }
 
             const filtered = database.filter(i => 
                 i.iata.toLowerCase().includes(keyword) || 
-                i.icao.toLowerCase().includes(keyword) ||
                 i.name.toLowerCase().includes(keyword) ||
                 i.country.toLowerCase().includes(keyword) ||
                 i.reason.toLowerCase().includes(keyword)
